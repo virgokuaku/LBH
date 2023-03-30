@@ -1,82 +1,19 @@
-! function (e, t) {
-	"object" == typeof exports && "undefined" != typeof module ? t(exports) : "function" == typeof define && define.amd ? define(["exports"], t) : t(e.ityped = {})
-}(this, function (e) {
-	"use strict";
-	e.init = function (e, t) {
-		var n = 0,
-			o = void 0,
-			r = void 0,
-			i = function (e, t) {
-				n === o && t.loop && (n = 0), setTimeout(function () {
-					a(e[n], t)
-				}, t.startDelay)
-			},
-			a = function (t, n) {
-				var o = 0,
-					r = t.length,
-					i = setInterval(function () {
-						if (n.placeholder ? e.placeholder += t[o] : e.textContent += t[o], ++o === r) return d(i, n)
-					}, n.typeSpeed)
-			},
-			d = function (e, t) {
-				return clearInterval(e), t.disableBackTyping && n === o - 1 ? t.onFinished() : t.loop || n !== o - 1 ? void setTimeout(function () {
-					return c(t)
-				}, t.backDelay) : t.onFinished()
-			},
-			c = function (t) {
-				var n = t.placeholder ? e.placeholder : e.textContent,
-					o = n.length,
-					r = setInterval(function () {
-						if (t.placeholder ? e.placeholder = e.placeholder.substr(0, --o) : e.textContent = n.substr(0, --o), 0 === o) return s(r, t)
-					}, t.backSpeed)
-			},
-			s = function (e, t) {
-				clearInterval(e), ++n, i(r, t)
-			};
-		return function (t) {
-			var n = function (e) {
-					var t = e.strings,
-						n = void 0 === t ? ["Put your strings here...", "and Enjoy!"] : t,
-						o = e.typeSpeed,
-						r = void 0 === o ? 100 : o,
-						i = e.backSpeed,
-						a = void 0 === i ? 50 : i,
-						d = e.backDelay,
-						c = void 0 === d ? 500 : d,
-						s = e.startDelay,
-						l = void 0 === s ? 500 : s,
-						u = e.cursorChar,
-						p = void 0 === u ? "|" : u,
-						f = e.placeholder,
-						v = void 0 !== f && f,
-						h = e.showCursor,
-						y = void 0 === h || h,
-						b = e.disableBackTyping,
-						g = void 0 !== b && b,
-						C = e.onFinished,
-						k = void 0 === C ? function () {} : C,
-						m = e.loop;
-					return {
-						strings: n,
-						typeSpeed: r,
-						backSpeed: a,
-						cursorChar: p,
-						backDelay: c,
-						placeholder: v,
-						startDelay: l,
-						showCursor: y,
-						loop: void 0 === m || m,
-						disableBackTyping: g,
-						onFinished: k
-					}
-				}(t || {}),
-				a = n.strings;
-			r = a, o = a.length, "string" == typeof e && (e = document.querySelector(e)), n.showCursor && function (e, t) {
-				var n = document.createElement("span");
-				n.classList.add("ityped-cursor"), n.textContent = "|", n.textContent = t.cursorChar, e.insertAdjacentElement("afterend", n)
-			}(e, n), i(a, n)
-		}(t)
-	}, Object.defineProperty(e, "__esModule", {
-		value: !0
-	})
-});
+;(function(root,factory){if(typeof define==="function"&&define.amd){define([],factory);}else if(typeof exports==="object"){module.exports={init:factory.init}}else{root.ityped=factory;}}(this,function(global){(function(a){a.forEach=function(a,b,c){var d=-1,e=a.length>>>0;(function f(g){var h,j=g===!1;do
+++d;while(!(d in a)&&d!==e);if(j||d===e){c&&c(!j,a);return}
+g=b.call({async:function(){return h=!0,f}},a[d],d,a),h||f(g)})()}})(typeof exports=="object"&&exports||global);let el,props,cursor=document.createElement('span');cursor.classList.add('ityped-cursor');cursor.textContent='|';function setProps(config){let props=config;props.strings=config.strings||['Put you string here...','and Enjoy!']
+props.typeSpeed=config.typeSpeed||100;props.backSpeed=config.backSpeed||50;props.backDelay=config.backDelay||500;props.startDelay=config.startDelay||500;props.showCursor=config.showCursor||true;props.loop=config.loop||false;if(props.showCursor)el.insertAdjacentElement('afterend',cursor)
+if(props.cursorChar!==undefined)cursor.textContent=props.cursorChar
+return Promise.resolve(props);}
+function init(element,config){el=document.querySelector(element);setProps(config).then(function(properties){props=properties;let words=props.strings,len=words.length;loopingOnWords(words);})}
+function loopingOnWords(words){forEach(words,function(word,index,arr){let time=(props.typeSpeed*word.length-1)
+if(props.backSpeed<props.typeSpeed){time-=(props.typeSpeed-props.backSpeed)*word.length;}else if(props.typeSpeed-props.backSpeed){time+=(props.backSpeed-props.typeSpeed)*word.length;}
+let done=this.async();let len=words.length;iterateWords(el,word,index,len).then(function(){setTimeout(function(){done();},time)})},function(){if(props.loop){loopingOnWords(words);}});}
+function increment(span,word){return new Promise(function(resolve,reject){for(let i=0;i<word.length;i++){count=0;let wordIndex=i;let len=word.length;setTimeout(function(i){appendWord(span,word.charAt(wordIndex));count++;if(count===len-1){resolve();}},props.typeSpeed*i);}})}
+function appendWord(el,word){el.innerHTML+=word;}
+function iterateWords(element,word,index,wordsLengthArray){return new Promise(function(resolve,reject){increment(element,word).then(function(){setTimeout(function(){decrement(element,word,index,wordsLengthArray).then(function(){setTimeout(function(){resolve();},props.startDelay)});},props.backDelay)});})}
+function iterateInsideDecrement(span,word,len,resolve){for(var i=len;i>0;i--){let iteratedI=i;let count=len;setTimeout(function(i){span.innerHTML=word.substring(0,len-iteratedI)
+count--;if(iteratedI===1){resolve();}},props.backSpeed*i);}}
+function decrement(span,word,index,lengthWords){return new Promise(function(resolve,reject){let len=word.length;if(index+1===lengthWords){if(!props.loop){if(props.onFinished!==undefined&&typeof props.onFinished==="function"){props.onFinished();}
+span.innerHTML=word;}
+else if(props.loop){iterateInsideDecrement(span,word,len,resolve);}}else if(index+1!==lengthWords){iterateInsideDecrement(span,word,len,resolve);}})}
+return{init}}(this)));
